@@ -105,6 +105,10 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
   const [applied, setApplied] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const originalScriptRef = useRef<string>('');
+  const codeEditorViewRef = useRef<EditorView | null>(null);
+  const [codeEditorHeight, setCodeEditorHeight] = useState<number | null>(null);
+  const codeEditorContainerRef = useRef<HTMLDivElement>(null);
+  const codeEditorDraggingRef = useRef(false);
 
   const isDark = themeToken.colorBgContainer !== '#ffffff' && themeToken.colorBgBase !== '#ffffff';
 
@@ -132,6 +136,46 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
       setActiveTab('summary');
     }
   }, [activeSection, generating, activeTab]);
+
+  // Auto-scroll code editor to bottom during streaming
+  useEffect(() => {
+    if (generating && activeSection === 'content' && codeEditorViewRef.current) {
+      const view = codeEditorViewRef.current;
+      const docLength = view.state.doc.length;
+      view.dispatch({
+        effects: EditorView.scrollIntoView(docLength, { y: 'end' }),
+      });
+    }
+  }, [generating, activeSection, sections.content]);
+
+  // Vertical resize handler for code editor
+  const handleCodeEditorVResizeDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    codeEditorDraggingRef.current = true;
+    const currentH = codeEditorContainerRef.current?.getBoundingClientRect().height || 300;
+    const startY = e.clientY;
+    const startH = currentH;
+
+    const onMouseMove = (ev: MouseEvent) => {
+      if (!codeEditorDraggingRef.current) return;
+      const dy = ev.clientY - startY;
+      const newH = Math.max(120, startH + dy);
+      setCodeEditorHeight(newH);
+    };
+
+    const onMouseUp = () => {
+      codeEditorDraggingRef.current = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, []);
 
   const handleGenerate = useCallback(() => {
     if (!prompt.trim()) return;
@@ -203,7 +247,7 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
     const isStreaming = generating && activeSection === 'content';
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 8, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 8 }}>
         {/* Metadata header: name + description */}
         {(sections.name || sections.description) && (
           <div style={{
@@ -258,7 +302,7 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
 
         {/* CodeMirror with live syntax highlighting */}
         <div style={{
-          flex: 1, minHeight: 0,
+          flex: 1, minHeight: 200,
           border: `1px solid ${themeToken.colorBorderSecondary}`,
           borderRadius: 8,
           overflow: 'hidden',
@@ -271,6 +315,7 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
               height="100%"
               style={{ height: '100%', overflow: 'auto' }}
               editable={false}
+              onCreateEditor={(view) => { codeEditorViewRef.current = view; }}
               basicSetup={{
                 lineNumbers: true,
                 foldGutter: true,
@@ -517,7 +562,10 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
       </Space>
 
       {/* Tabbed Content Area */}
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div ref={codeEditorContainerRef} style={{
+        ...(codeEditorHeight ? { height: codeEditorHeight, flexShrink: 0 } : { flex: 1, minHeight: 0 }),
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }}>
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
@@ -527,6 +575,27 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
           items={tabItems}
           tabBarStyle={{ marginBottom: 8, flexShrink: 0 }}
         />
+      </div>
+
+      {/* Vertical resize handle for AI panel */}
+      <div
+        onMouseDown={handleCodeEditorVResizeDown}
+        style={{
+          height: 6,
+          cursor: 'row-resize',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          marginTop: 2,
+        }}
+      >
+        <div style={{
+          width: 40,
+          height: 3,
+          borderRadius: 2,
+          backgroundColor: themeToken.colorBorderSecondary,
+        }} />
       </div>
 
       {/* Apply Button */}
@@ -555,7 +624,7 @@ const ScriptAiPanel: React.FC<ScriptAiPanelProps> = ({ scriptType, currentScript
         .cm-merge-b .cm-changedLine { background: rgba(100, 255, 100, 0.15) !important; }
         /* Fix Ant Design Tabs to fill available height */
         .script-ai-tabs .ant-tabs-content { height: 100%; }
-        .script-ai-tabs .ant-tabs-content > .ant-tabs-tabpane { height: 100%; overflow: hidden; }
+        .script-ai-tabs .ant-tabs-content > .ant-tabs-tabpane { height: 100%; }
         .script-ai-tabs .ant-tabs-content > .ant-tabs-tabpane-active { display: flex; flex-direction: column; }
         /* Constrain CodeMirrorMerge width */
         .script-ai-tabs .cm-mergeView { max-width: 100%; overflow-x: auto; }

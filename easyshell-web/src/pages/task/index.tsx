@@ -41,12 +41,41 @@ const TaskPage: React.FC = () => {
   const logContainerRef = useRef<HTMLDivElement>(null);
   const detailTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [manualScriptContent, setManualScriptContent] = useState('');
+  const [taskEditorHeight, setTaskEditorHeight] = useState<number>(240);
+  const taskEditorDraggingRef = useRef(false);
+  const taskEditorContainerRef = useRef<HTMLDivElement>(null);
 
   // Determine dark mode from theme token
   const isDark = token.colorBgContainer !== '#ffffff' && token.colorBgBase !== '#ffffff';
 
   // CodeMirror extensions for shell highlighting
   const editorExtensions = useMemo(() => [StreamLanguage.define(shell)], []);
+
+  // Vertical resize handler for task script editor
+  const handleTaskEditorVResizeDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    taskEditorDraggingRef.current = true;
+    const currentH = taskEditorContainerRef.current?.getBoundingClientRect().height || 240;
+    const startY = e.clientY;
+    const startH = currentH;
+    const onMouseMove = (ev: MouseEvent) => {
+      if (!taskEditorDraggingRef.current) return;
+      const dy = ev.clientY - startY;
+      const newH = Math.max(120, startH + dy);
+      setTaskEditorHeight(newH);
+    };
+    const onMouseUp = () => {
+      taskEditorDraggingRef.current = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, []);
 
   const refreshTaskDetail = useCallback((taskId: string) => {
     getTaskDetail(taskId).then((res) => {
@@ -398,7 +427,7 @@ const TaskPage: React.FC = () => {
               ) : (
                 <div>
                   <div style={{ marginBottom: 8, color: token.colorText, fontWeight: 500 }}>{t('task.scriptContent')} <span style={{ color: token.colorError }}>*</span></div>
-                  <div style={{
+                  <div ref={taskEditorContainerRef} style={{
                     border: `1px solid ${token.colorBorderSecondary}`,
                     borderRadius: 8,
                     overflow: 'hidden',
@@ -408,7 +437,7 @@ const TaskPage: React.FC = () => {
                       onChange={(val) => setManualScriptContent(val)}
                       extensions={editorExtensions}
                       theme={isDark ? 'dark' : 'light'}
-                      height="240px"
+                      height={`${taskEditorHeight}px`}
                       placeholder={"#!/bin/bash\necho 'Hello EasyShell'"}
                       basicSetup={{
                         lineNumbers: true,
@@ -417,6 +446,26 @@ const TaskPage: React.FC = () => {
                         autocompletion: false,
                       }}
                     />
+                  </div>
+                  {/* Vertical resize handle */}
+                  <div
+                    onMouseDown={handleTaskEditorVResizeDown}
+                    style={{
+                      height: 6,
+                      cursor: 'row-resize',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      marginTop: 2,
+                    }}
+                  >
+                    <div style={{
+                      width: 40,
+                      height: 3,
+                      borderRadius: 2,
+                      backgroundColor: token.colorBorderSecondary,
+                    }} />
                   </div>
                 </div>
               )}

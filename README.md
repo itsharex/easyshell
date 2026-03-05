@@ -4,9 +4,9 @@
 
 # EasyShell
 
-**Lightweight Server Management & Intelligent Operations Platform**
+**AI-Native Server Operations Platform**
 
-Server-Agent Architecture | Batch Script Execution | Real-time Logs | AI-Powered Ops | Bot Notifications
+Let AI write your scripts, orchestrate multi-host tasks, and analyze your infrastructure — while you focus on what matters.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Docs](https://img.shields.io/badge/Docs-docs.easyshell.ai-green.svg)](https://docs.easyshell.ai)
@@ -16,11 +16,61 @@ Server-Agent Architecture | Batch Script Execution | Real-time Logs | AI-Powered
 
 ---
 
-## Highlights: AI-Powered Scheduled Inspections
+## Why EasyShell?
 
-> **Cron → Script → AI Analysis → Bot Notification** — fully automated server inspection pipeline.
+Traditional server management tools expect you to write every script, SSH into every box, and interpret every output yourself. EasyShell flips that model: **AI is the operator, you are the decision-maker.**
 
-EasyShell can run **scheduled inspection tasks** on your servers via cron expressions, automatically collect script output (disk usage, service health, logs, etc.), send results to an **AI model for intelligent analysis**, and push the analysis report to your team through **bot channels** — all without human intervention.
+- **Describe what you need in plain language** → AI writes production-ready shell scripts with diff review
+- **Set a goal across multiple hosts** → AI plans the execution steps, runs them, and synthesizes the results
+- **Connect via Web SSH** → Full terminal with file manager, multi-tab, search — no local client needed
+
+---
+
+## Core Features
+
+### 1. AI Script Assistant
+
+> Describe what you want. AI writes the script. Review the diff. One click to apply.
+
+The AI Script Workbench is a split-panel editor where you describe requirements in natural language, and AI generates (or modifies) shell scripts targeting your chosen OS. Real-time streaming shows the script being written. A built-in diff view highlights exactly what changed. A summary tab explains the modifications in your language.
+
+<p align="center">
+  <img src="docs/images/AI%20Script%20helper.png" alt="AI Script Assistant — live code generation with diff review" width="90%" />
+</p>
+
+### 2. AI Task Orchestration
+
+> "Check disk and memory on all hosts, flag anything over 80%, and suggest fixes." — Done.
+
+The AI Chat interface lets you issue high-level operational goals. AI decomposes them into a multi-step execution plan (explore → analyze → report), dispatches scripts to target hosts, collects results, and delivers a structured analysis with risk assessment and actionable recommendations — all in a single conversation turn.
+
+<p align="center">
+  <img src="docs/images/AI%20task%20orchestration.png" alt="AI Task Orchestration — multi-step execution plan with analysis" width="90%" />
+</p>
+
+### 3. Fully Functional Web SSH
+
+> Real terminal. Real file manager. No SSH client required.
+
+A production-grade web terminal with multi-tab sessions, integrated file manager (upload, download, create, delete, navigate), full-text search within terminal buffer, and persistent connections via WebSocket. Manage files and run commands side by side.
+
+<p align="center">
+  <img src="docs/images/Fully%20functional%20web%20SSH.png" alt="Web SSH — terminal with file manager and multi-tab" width="90%" />
+</p>
+
+---
+
+## AI-Powered Automated Inspections
+
+> **Cron → Script → AI Analysis → Bot Notification** — fully automated, zero human intervention.
+
+Schedule inspection tasks with cron expressions. EasyShell dispatches scripts to agents, collects output (disk, memory, services, logs), sends it to your AI model for intelligent analysis, and pushes the report to your team via bot channels.
+
+**How it works:**
+1. **Configure** — cron expression + shell script + AI analysis prompt
+2. **Execute** — EasyShell dispatches to target agents on schedule
+3. **Analyze** — Output sent to AI model (OpenAI / Gemini / GitHub Copilot / Custom)
+4. **Notify** — Report pushed to bot channel (Telegram, Discord, Slack, DingTalk, Feishu, WeCom)
 
 **Supported Bot Channels** ([Configuration Guide](https://docs.easyshell.ai/configuration/bot-channels/)):
 
@@ -33,11 +83,7 @@ EasyShell can run **scheduled inspection tasks** on your servers via cron expres
 | [Feishu (飞书)](https://docs.easyshell.ai/configuration/bot-channels/) | ✅ Supported |
 | [WeCom (企业微信)](https://docs.easyshell.ai/configuration/bot-channels/) | ✅ Supported |
 
-**How it works:**
-1. **Configure** a scheduled task with cron expression + shell script + AI prompt
-2. **Execute** — EasyShell dispatches the script to target agents on schedule
-3. **Analyze** — Script output is sent to your configured AI model (OpenAI / Gemini / GitHub Copilot / Custom)
-4. **Notify** — AI analysis report is pushed to your bot channel (Telegram, Discord, Slack, etc.)
+---
 
 ## Quick Start
 
@@ -63,6 +109,20 @@ Open `http://localhost:18880` → login with `easyshell` / `easyshell@changeme`.
 > docker compose -f docker-compose.build.yml up -d
 > ```
 
+---
+
+## Full Feature Set
+
+| Category | Features |
+|----------|----------|
+| **AI Intelligence** | AI Script Assistant (generate / modify / diff / summary), AI Task Orchestration (multi-step plans, parallel execution, analysis), AI Chat, Scheduled Inspections with AI Analysis & Bot Push, Inspection Reports, Operation Approvals |
+| **Operations** | Script library, batch execution, real-time streaming logs, Web SSH terminal with file manager |
+| **Infrastructure** | Host management, real-time monitoring, cluster grouping, agent auto-deployment |
+| **Administration** | User management, system config, AI model settings (OpenAI / Gemini / Copilot / Custom), risk control |
+| **Platform** | i18n (EN / ZH), dark/light theme, responsive design, audit logging |
+
+---
+
 ## Architecture
 
 ```
@@ -87,42 +147,6 @@ Open `http://localhost:18880` → login with `easyshell` / `easyshell@changeme`.
 | Web | React 19, TypeScript, Vite 7, Ant Design 6 |
 | Database | MySQL 8.0 |
 | Cache | Redis 7 |
-
-## Features
-
-| Category | Features |
-|----------|----------|
-| **Infrastructure** | Host management, monitoring, cluster grouping |
-| **Operations** | Script library, batch execution, real-time logs, web terminal |
-| **AI Intelligence** | AI chat, **scheduled inspections with AI analysis & bot push**, inspection reports, operation approvals |
-| **Administration** | User management, system config, AI model settings, risk control, agent orchestration |
-| **Platform** | i18n (EN / ZH), dark/light theme, responsive design, audit logging |
-
-## Screenshots
-
-### Host Management
-![Host Management](https://easyshell.ai/images/features/host-management.png)
-
-### Script Execution
-![Script Execution](https://easyshell.ai/images/features/script-execution.png)
-
-### Real-time Logs
-![Real-time Logs](https://easyshell.ai/images/features/realtime-logs.png)
-
-### Web Terminal
-![Web Terminal](https://easyshell.ai/images/features/web-terminal.png)
-
-### AI Operations
-![AI Operations](https://easyshell.ai/images/features/ai-operations.png)
-
-### Security Controls
-![Security Controls](https://easyshell.ai/images/features/security-controls.png)
-
-### Bot Integration
-
-Supports [Telegram](https://docs.easyshell.ai/configuration/bot-channels/) · [Discord](https://docs.easyshell.ai/configuration/bot-channels/) · [Slack](https://docs.easyshell.ai/configuration/bot-channels/) · [DingTalk](https://docs.easyshell.ai/configuration/bot-channels/) · [Feishu](https://docs.easyshell.ai/configuration/bot-channels/) · [WeCom](https://docs.easyshell.ai/configuration/bot-channels/) — interactive chat & scheduled inspection notifications.
-
-![Bot Integration](docs/images/bot-integration.png)
 
 ## Project Structure
 

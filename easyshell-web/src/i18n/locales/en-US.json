@@ -1056,7 +1056,11 @@
       "newTitle": "New Script",
       "editTitle": "Edit Script",
       "saving": "Saving...",
-      "loadFailed": "Failed to load script"
+      "loadFailed": "Failed to load script",
+      "editorPanel": "Script Editor",
+      "aiPanel": "AI Assistant",
+      "expand": "Expand Panel",
+      "collapse": "Collapse Panel"
     },
     "management": "Script Management",
     "templates": "Script Templates",

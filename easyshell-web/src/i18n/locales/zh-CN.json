@@ -1056,7 +1056,11 @@
       "newTitle": "新建脚本",
       "editTitle": "编辑脚本",
       "saving": "保存中...",
-      "loadFailed": "加载脚本失败"
+      "loadFailed": "加载脚本失败",
+      "editorPanel": "脚本编辑器",
+      "aiPanel": "AI 助手",
+      "expand": "展开面板",
+      "collapse": "收起面板"
     },
     "management": "脚本管理",
     "templates": "脚本模板",
