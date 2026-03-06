@@ -58,6 +58,35 @@ A production-grade web terminal with multi-tab sessions, integrated file manager
   <img src="docs/images/Fully%20functional%20web%20SSH.png" alt="Web SSH — terminal with file manager and multi-tab" width="90%" />
 </p>
 
+### 4. Host Management & Monitoring
+
+> Unified view of all servers with real-time status, batch operations, and agent lifecycle management.
+
+Manage hosts individually or in bulk — add via form or CSV import, organize into clusters, monitor connection status, and deploy/upgrade agents with one click. The unified dashboard shows health metrics at a glance.
+
+<p align="center">
+  <img src="docs/images/host-management.png" alt="Host Management — unified server dashboard with batch operations" width="90%" />
+</p>
+
+### 5. Real-Time Streaming Logs
+
+> Watch script execution unfold live across all target hosts.
+
+When you dispatch a script, EasyShell streams output from every agent in real time. Color-coded logs, timestamps, and per-host filtering help you spot issues instantly — no more waiting for batch jobs to complete.
+
+<p align="center">
+  <img src="docs/images/realtime-logs.png" alt="Real-Time Logs — live streaming output from multiple hosts" width="90%" />
+</p>
+
+### 6. Security & Risk Controls
+
+> Built-in safeguards: approval workflows, audit trails, and operation restrictions.
+
+Configure which operations require approval before execution. All actions are logged for compliance. Role-based access control limits who can do what, and sensitive commands can be flagged or blocked entirely.
+
+<p align="center">
+  <img src="docs/images/security-controls.png" alt="Security Controls — approval workflows and audit logging" width="90%" />
+</p>
 ---
 
 ## AI-Powered Automated Inspections
