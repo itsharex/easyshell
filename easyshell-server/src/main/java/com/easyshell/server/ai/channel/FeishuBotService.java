@@ -59,6 +59,7 @@ public class FeishuBotService implements BotChannelService {
     private static final String TOKEN_URL = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal";
     private static final String WS_ENDPOINT_URL = "https://open.feishu.cn/open-apis/callback/ws/endpoint";
     private static final String REPLY_URL_TEMPLATE = "https://open.feishu.cn/open-apis/im/v1/messages/%s/reply";
+    private static final String SEND_MESSAGE_URL = "https://open.feishu.cn/open-apis/im/v1/messages";
     private static final int RECONNECT_DELAY_SECONDS = 5;
     private static final int MAX_RECONNECT_DELAY_SECONDS = 60;
 
@@ -475,6 +476,37 @@ public class FeishuBotService implements BotChannelService {
 
     // ==================== Common: Push Message ====================
 
+    private boolean sendApiMessage(String receiveIdType, String receiveId, String content) {
+        String token = getTenantAccessToken();
+        if (token == null) {
+            log.warn("Feishu: cannot send API message, no tenant_access_token");
+            return false;
+        }
+
+        try {
+            String contentJson = objectMapper.writeValueAsString(Map.of("text", content));
+            Map<String, Object> body = Map.of(
+                    "receive_id", receiveId,
+                    "msg_type", "text",
+                    "content", contentJson
+            );
+
+            String responseStr = WebClient.create().post()
+                    .uri(SEND_MESSAGE_URL + "?receive_id_type=" + receiveIdType)
+                    .header("Authorization", "Bearer " + token)
+                    .header("Content-Type", "application/json; charset=utf-8")
+                    .bodyValue(body)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block(java.time.Duration.ofSeconds(10));
+            log.debug("Feishu API message sent to {} ({}): {}", receiveId, receiveIdType, responseStr);
+            return true;
+        } catch (Exception e) {
+            log.warn("Feishu API message failed: {}", e.getMessage());
+            return false;
+        }
+    }
+
     @Override
     public boolean pushMessage(String targetId, String message) {
         if (!running.get()) {
@@ -482,6 +514,17 @@ public class FeishuBotService implements BotChannelService {
             return false;
         }
         try {
+            if ("webhook".equals(targetId)) {
+                sendWebhookMessage(message);
+                return true;
+            }
+            if (isStreamMode() && appId != null && !appId.isBlank()) {
+                if (targetId.startsWith("chat:")) {
+                    return sendApiMessage("chat_id", targetId.substring(5), message);
+                } else if (targetId.startsWith("user:")) {
+                    return sendApiMessage("open_id", targetId.substring(5), message);
+                }
+            }
             sendWebhookMessage(message);
             return true;
         } catch (Exception e) {

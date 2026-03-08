@@ -39,9 +39,13 @@ import {
 import { getHostList } from '../../api/host';
 import { getClusterList } from '../../api/cluster';
 import { getTagList } from '../../api/tag';
-import type { AiScheduledTask, AiScheduledTaskRequest, BuiltInTemplate, Agent, ClusterVO, TagVO } from '../../types';
+import { getScriptList } from '../../api/script';
+import type { AiScheduledTask, AiScheduledTaskRequest, BuiltInTemplate, Agent, ClusterVO, TagVO, Script } from '../../types';
 import { taskTypeMap } from '../../utils/status';
 import { formatTime } from '../../utils/format';
+import CodeMirror from '@uiw/react-codemirror';
+import { StreamLanguage } from '@codemirror/language';
+import { shell } from '@codemirror/legacy-modes/mode/shell';
 import { Cron } from 'react-js-cron';
 import type { CronError } from 'react-js-cron';
 import 'react-js-cron/dist/styles.css';
@@ -203,6 +207,10 @@ const AiScheduled: React.FC = () => {
   const [clusters, setClusters] = useState<ClusterVO[]>([]);
   const [tags, setTags] = useState<TagVO[]>([]);
   const [loadingTargets, setLoadingTargets] = useState(false);
+  const [scripts, setScripts] = useState<Script[]>([]);
+
+  const shellExtensions = useMemo(() => [StreamLanguage.define(shell)], []);
+  const scriptContent = Form.useWatch('scriptTemplate', form);
 
   const targetType = Form.useWatch('targetType', form);
   const notifyStrategy = Form.useWatch('notifyStrategy', form);
@@ -248,6 +256,16 @@ const AiScheduled: React.FC = () => {
     ]).catch(() => {}).finally(() => setLoadingTargets(false));
   }, []);
 
+  const fetchScripts = useCallback(() => {
+    getScriptList()
+      .then((res) => {
+        if (res.code === 200 && res.data) {
+          setScripts(res.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const targetOptions = useMemo(() => {
     switch (targetType) {
       case 'agent':
@@ -265,7 +283,8 @@ const AiScheduled: React.FC = () => {
     fetchTasks();
     fetchTemplates();
     fetchTargets();
-  }, [fetchTasks, fetchTemplates, fetchTargets]);
+    fetchScripts();
+  }, [fetchTasks, fetchTemplates, fetchTargets, fetchScripts]);
 
   useEffect(() => {
     getAiConfig()
@@ -592,8 +611,51 @@ const AiScheduled: React.FC = () => {
             </Form.Item>
           </div>
 
-          <Form.Item name="scriptTemplate" label={t('scheduled.field.scriptTemplate')}>
-            <TextArea rows={8} placeholder={t('scheduled.field.scriptPlaceholder')} style={{ fontFamily: 'monospace', fontSize: 12 }} />
+          <Form.Item label={t('scheduled.field.scriptTemplate')}>
+            <Select
+              placeholder={t('scheduled.field.scriptFromLibraryPlaceholder')}
+              allowClear
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label as string)?.toLowerCase().includes(input.toLowerCase()) ?? false
+              }
+              options={scripts.map((s) => ({
+                label: `${s.name}${s.description ? ` - ${s.description}` : ''}`,
+                value: s.id,
+              }))}
+              onChange={(scriptId: number | undefined) => {
+                if (scriptId != null) {
+                  const selected = scripts.find((s) => s.id === scriptId);
+                  if (selected) {
+                    form.setFieldsValue({ scriptTemplate: selected.content });
+                  }
+                }
+              }}
+              style={{ marginBottom: 8 }}
+            />
+            <Form.Item name="scriptTemplate" noStyle>
+              <Input type="hidden" />
+            </Form.Item>
+            <div style={{
+              border: `1px solid ${token.colorBorder}`,
+              borderRadius: token.borderRadius,
+              overflow: 'hidden',
+            }}>
+              <CodeMirror
+                value={scriptContent || ''}
+                height="300px"
+                extensions={shellExtensions}
+                onChange={(val) => form.setFieldsValue({ scriptTemplate: val })}
+                theme={token.colorBgContainer.toLowerCase().includes('000') ? 'dark' : 'light'}
+                style={{ overflow: 'auto' }}
+                basicSetup={{
+                  lineNumbers: true,
+                  foldGutter: true,
+                  highlightActiveLine: true,
+                  autocompletion: false,
+                }}
+              />
+            </div>
           </Form.Item>
 
           <Form.Item name="aiPrompt" label={t('scheduled.field.aiPrompt')}>

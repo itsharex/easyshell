@@ -178,6 +178,7 @@ public class DataInitializer implements CommandLineRunner {
         createConfigIfAbsent("ai.channel.dingtalk.secret", "", "config.desc.ai_channel_dingtalk_secret", "ai-channel");
         createConfigIfAbsent("ai.channel.dingtalk.client-id", "", "config.desc.ai_channel_dingtalk_client_id", "ai-channel");
         createConfigIfAbsent("ai.channel.dingtalk.client-secret", "", "config.desc.ai_channel_dingtalk_client_secret", "ai-channel");
+        createConfigIfAbsent("ai.channel.dingtalk.push-targets", "", "config.desc.ai_channel_dingtalk_push_targets", "ai-channel");
 
         // 飞书 Webhook
         createConfigIfAbsent("ai.channel.feishu.enabled", "false", "config.desc.ai_channel_feishu_enabled", "ai-channel");
@@ -186,6 +187,7 @@ public class DataInitializer implements CommandLineRunner {
         createConfigIfAbsent("ai.channel.feishu.mode", "webhook", "config.desc.ai_channel_feishu_mode", "ai-channel");
         createConfigIfAbsent("ai.channel.feishu.app-id", "", "config.desc.ai_channel_feishu_app_id", "ai-channel");
         createConfigIfAbsent("ai.channel.feishu.app-secret", "", "config.desc.ai_channel_feishu_app_secret", "ai-channel");
+        createConfigIfAbsent("ai.channel.feishu.push-targets", "", "config.desc.ai_channel_feishu_push_targets", "ai-channel");
 
         // Slack Webhook
         createConfigIfAbsent("ai.channel.slack.enabled", "false", "config.desc.ai_channel_slack_enabled", "ai-channel");

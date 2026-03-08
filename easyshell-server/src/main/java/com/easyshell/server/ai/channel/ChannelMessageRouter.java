@@ -356,7 +356,15 @@ public class ChannelMessageRouter {
                 String channelIds = getConfigValue("ai.channel.discord.allowed-channel-ids");
                 yield parseCsvList(channelIds);
             }
-            case "dingtalk", "feishu", "wechat-work" -> List.of("webhook");
+            case "dingtalk" -> {
+                String pushTargets = getConfigValue("ai.channel.dingtalk.push-targets");
+                yield (pushTargets != null && !pushTargets.isBlank()) ? parseCsvList(pushTargets) : List.of("webhook");
+            }
+            case "feishu" -> {
+                String pushTargets = getConfigValue("ai.channel.feishu.push-targets");
+                yield (pushTargets != null && !pushTargets.isBlank()) ? parseCsvList(pushTargets) : List.of("webhook");
+            }
+            case "wechat-work" -> List.of("webhook");
             case "slack" -> {
                 String slackChannelIds = getConfigValue("ai.channel.slack.allowed-channel-ids");
                 yield (slackChannelIds != null && !slackChannelIds.isBlank()) ? parseCsvList(slackChannelIds) : List.of("webhook");

@@ -148,7 +148,8 @@ public class AiSchedulerService {
                 aiAnalysis = performAiAnalysis(scheduledTask.getAiPrompt(), filteredOutput);
             }
 
-            String status = "success";
+            // Determine status based on actual job exit codes
+            String status = determineTaskStatus(task.getId());
             runningReport.setScriptOutput(scriptOutput);
             runningReport.setAiAnalysis(aiAnalysis);
             runningReport.setStatus(status);
@@ -243,6 +244,16 @@ public class AiSchedulerService {
         return getBuiltInTemplate(task.getTaskType());
     }
 
+    private String determineTaskStatus(String taskId) {
+        List<Job> jobs = jobRepository.findByTaskId(taskId);
+        if (jobs.isEmpty()) {
+            return "failed";
+        }
+        boolean anyFailed = jobs.stream().anyMatch(j ->
+                j.getStatus() >= 3 || (j.getExitCode() != null && j.getExitCode() != 0));
+        return anyFailed ? "failed" : "success";
+    }
+
     private String collectExecutionOutput(String taskId) {
         if (taskId == null) {
             return "未获取到任务ID";
@@ -328,7 +339,13 @@ public class AiSchedulerService {
                 || lowerAnalysis.contains("紧急") || lowerAnalysis.contains("critical")
                 || lowerAnalysis.contains("异常") || lowerAnalysis.contains("告警")
                 || lowerAnalysis.contains("磁盘空间不足") || lowerAnalysis.contains("内存不足")
-                || lowerAnalysis.contains("cpu 使用率过高") || lowerAnalysis.contains("安全风险");
+                || lowerAnalysis.contains("cpu 使用率过高") || lowerAnalysis.contains("安全风险")
+                || lowerAnalysis.contains("error") || lowerAnalysis.contains("warning")
+                || lowerAnalysis.contains("fatal") || lowerAnalysis.contains("failure")
+                || lowerAnalysis.contains("timeout") || lowerAnalysis.contains("unreachable")
+                || lowerAnalysis.contains("out of memory") || lowerAnalysis.contains("disk full")
+                || lowerAnalysis.contains("no space left") || lowerAnalysis.contains("high risk")
+                || lowerAnalysis.contains("vulnerability") || lowerAnalysis.contains("service down");
 
         if (hasCritical) {
             log.warn("⚠ AI 巡检告警 - 任务 [{}] 发现关键问题: {}",

@@ -43,6 +43,9 @@ public class DingtalkBotService implements BotChannelService {
     // Stream mode fields
     private volatile String clientId;
     private volatile String clientSecret;
+
+    private volatile String accessToken;
+    private volatile long tokenExpireTime;
     private volatile String mode; // "webhook" or "stream"
     private final AtomicReference<WebSocketSession> wsSession = new AtomicReference<>();
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
@@ -52,6 +55,9 @@ public class DingtalkBotService implements BotChannelService {
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     private static final String STREAM_REGISTER_URL = "https://api.dingtalk.com/v1.0/gateway/connections/open";
+    private static final String TOKEN_URL = "https://api.dingtalk.com/v1.0/oauth2/accessToken";
+    private static final String GROUP_MESSAGE_URL = "https://api.dingtalk.com/v1.0/robot/groupMessages/send";
+    private static final String USER_MESSAGE_URL = "https://api.dingtalk.com/v1.0/robot/oToMessages/batchSend";
     private static final String BOT_MESSAGE_TOPIC = "/v1.0/im/bot/messages/get";
     private static final int RECONNECT_DELAY_SECONDS = 5;
     private static final int MAX_RECONNECT_DELAY_SECONDS = 60;
@@ -406,6 +412,118 @@ public class DingtalkBotService implements BotChannelService {
 
     // ==================== Common: Push Message ====================
 
+    private synchronized String getAccessToken() {
+        long now = System.currentTimeMillis();
+        if (accessToken != null && tokenExpireTime > now + 300_000) {
+            return accessToken;
+        }
+
+        try {
+            String responseStr = WebClient.create().post()
+                    .uri(TOKEN_URL)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(Map.of("appKey", clientId, "appSecret", clientSecret))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block(java.time.Duration.ofSeconds(30));
+
+            JsonNode resp = objectMapper.readTree(responseStr);
+            String token = resp.path("accessToken").asText(null);
+            int expireIn = resp.path("expireIn").asInt(7200);
+
+            if (token == null || token.isBlank()) {
+                log.error("DingTalk accessToken request failed: {}", responseStr);
+                return null;
+            }
+
+            accessToken = token;
+            tokenExpireTime = now + (long) expireIn * 1000;
+            log.debug("DingTalk accessToken refreshed, expires in {}s", expireIn);
+            return accessToken;
+        } catch (Exception e) {
+            log.error("Failed to get DingTalk accessToken: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private boolean sendGroupMessage(String openConversationId, String content) {
+        String token = getAccessToken();
+        if (token == null) {
+            log.warn("DingTalk: cannot send group message, no accessToken");
+            return false;
+        }
+
+        try {
+            String msgParam = objectMapper.writeValueAsString(Map.of("content", content));
+            Map<String, Object> body = Map.of(
+                    "msgKey", "sampleText",
+                    "msgParam", msgParam,
+                    "robotCode", clientId,
+                    "openConversationId", openConversationId
+            );
+
+            String responseStr = WebClient.create().post()
+                    .uri(GROUP_MESSAGE_URL)
+                    .header("x-acs-dingtalk-access-token", token)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(body)
+                    .retrieve()
+                    .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                            resp -> resp.bodyToMono(String.class).map(b -> {
+                                log.error("DingTalk group message API error: HTTP {} - {}",
+                                        resp.statusCode().value(), b);
+                                return new RuntimeException("DingTalk API error: " + resp.statusCode().value() + " - " + b);
+                            }))
+                    .bodyToMono(String.class)
+                    .block(java.time.Duration.ofSeconds(10));
+            log.debug("DingTalk group message sent to {}: {}", openConversationId, responseStr);
+            return true;
+        } catch (Exception e) {
+            log.warn("DingTalk group message to {} failed: {}", openConversationId, e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean sendUserMessage(String userId, String content) {
+        String token = getAccessToken();
+        if (token == null) {
+            log.warn("DingTalk: cannot send user message, no accessToken");
+            return false;
+        }
+
+        try {
+            String msgParam = objectMapper.writeValueAsString(Map.of("content", content));
+            Map<String, Object> body = Map.of(
+                    "msgKey", "sampleText",
+                    "msgParam", msgParam,
+                    "robotCode", clientId,
+                    "userIds", List.of(userId)
+            );
+
+            String responseStr = WebClient.create().post()
+                    .uri(USER_MESSAGE_URL)
+                    .header("x-acs-dingtalk-access-token", token)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(body)
+                    .retrieve()
+                    .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                            resp -> resp.bodyToMono(String.class).map(b -> {
+                                log.error("DingTalk user message API error: HTTP {} - {}. " +
+                                        "Ensure the app has '企业内机器人发送消息权限' permission and userId is a valid staffId.",
+                                        resp.statusCode().value(), b);
+                                return new RuntimeException("DingTalk API error: " + resp.statusCode().value() + " - " + b);
+                            }))
+                    .bodyToMono(String.class)
+                    .block(java.time.Duration.ofSeconds(10));
+            log.debug("DingTalk user message sent to {}: {}", userId, responseStr);
+            return true;
+        } catch (Exception e) {
+            log.warn("DingTalk user message to {} failed: {}. Check: 1) App has robot send permission enabled; 2) userId is a staffId (not phone/unionId); 3) No IP whitelist blocking.",
+                    userId, e.getMessage());
+            return false;
+        }
+    }
+
     @Override
     public boolean pushMessage(String targetId, String message) {
         if (!running.get()) {
@@ -413,6 +531,17 @@ public class DingtalkBotService implements BotChannelService {
             return false;
         }
         try {
+            if ("webhook".equals(targetId)) {
+                sendWebhookMessage(message);
+                return true;
+            }
+            if (isStreamMode() && clientId != null && !clientId.isBlank()) {
+                if (targetId.startsWith("group:")) {
+                    return sendGroupMessage(targetId.substring(6), message);
+                } else if (targetId.startsWith("user:")) {
+                    return sendUserMessage(targetId.substring(5), message);
+                }
+            }
             sendWebhookMessage(message);
             return true;
         } catch (Exception e) {

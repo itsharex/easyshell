@@ -39,36 +39,50 @@ const CHANNEL_LABELS: Record<string, string> = {
   'wechat-work': '企业微信',
 };
 
-const CHANNEL_SETTINGS_META: Record<string, { key: string; label: string; sensitive: boolean; placeholder: string; type?: 'input' | 'select'; options?: { label: string; value: string }[]; visibleWhen?: { key: string; value: string } }[]> = {
+// Channel settings metadata - uses i18n key references resolved at render time
+type ChannelFieldMeta = {
+  key: string;
+  labelKey: string;
+  sensitive: boolean;
+  placeholderKey: string;
+  type?: 'input' | 'select';
+  optionKeys?: { labelKey: string; value: string }[];
+  visibleWhen?: { key: string; value: string };
+  extraKey?: string;
+};
+
+const CHANNEL_SETTINGS_META: Record<string, ChannelFieldMeta[]> = {
   telegram: [
-    { key: 'bot-token', label: 'Bot Token', sensitive: true, placeholder: '请输入 Telegram Bot Token' },
-    { key: 'allowed-chat-ids', label: '允许的 Chat ID', sensitive: false, placeholder: '多个 ID 用逗号分隔' },
+    { key: 'bot-token', labelKey: 'aiConfig.channel.botToken', sensitive: true, placeholderKey: 'aiConfig.channel.botTokenPlaceholder' },
+    { key: 'allowed-chat-ids', labelKey: 'aiConfig.channel.allowedChatIds', sensitive: false, placeholderKey: 'aiConfig.channel.allowedChatIdsPlaceholder' },
   ],
   discord: [
-    { key: 'bot-token', label: 'Bot Token', sensitive: true, placeholder: '请输入 Discord Bot Token' },
-    { key: 'guild-id', label: 'Server (Guild) ID', sensitive: false, placeholder: '请输入 Discord Server ID' },
-    { key: 'allowed-channel-ids', label: '允许的 Channel ID', sensitive: false, placeholder: '多个 ID 用逗号分隔' },
+    { key: 'bot-token', labelKey: 'aiConfig.channel.botToken', sensitive: true, placeholderKey: 'aiConfig.channel.botTokenPlaceholder' },
+    { key: 'guild-id', labelKey: 'aiConfig.channel.guildId', sensitive: false, placeholderKey: 'aiConfig.channel.guildIdPlaceholder' },
+    { key: 'allowed-channel-ids', labelKey: 'aiConfig.channel.allowedChannelIds', sensitive: false, placeholderKey: 'aiConfig.channel.allowedChannelIdsPlaceholder' },
   ],
   dingtalk: [
-    { key: 'mode', label: '连接模式', sensitive: false, placeholder: '', type: 'select', options: [{ label: 'Webhook', value: 'webhook' }, { label: 'Stream (免公网IP)', value: 'stream' }] },
-    { key: 'webhook-url', label: 'Webhook 地址', sensitive: true, placeholder: '请输入钉钉 Webhook URL', visibleWhen: { key: 'mode', value: 'webhook' } },
-    { key: 'secret', label: '签名密钥', sensitive: true, placeholder: '请输入钉钉签名 Secret', visibleWhen: { key: 'mode', value: 'webhook' } },
-    { key: 'client-id', label: 'Client ID (AppKey)', sensitive: true, placeholder: '请输入钉钉应用 AppKey', visibleWhen: { key: 'mode', value: 'stream' } },
-    { key: 'client-secret', label: 'Client Secret (AppSecret)', sensitive: true, placeholder: '请输入钉钉应用 AppSecret', visibleWhen: { key: 'mode', value: 'stream' } },
+    { key: 'mode', labelKey: 'aiConfig.channel.mode', sensitive: false, placeholderKey: '', type: 'select', optionKeys: [{ labelKey: 'aiConfig.channel.modeWebhook', value: 'webhook' }, { labelKey: 'aiConfig.channel.modeStream', value: 'stream' }] },
+    { key: 'webhook-url', labelKey: 'aiConfig.channel.webhookUrl', sensitive: true, placeholderKey: 'aiConfig.channel.webhookUrlPlaceholder', visibleWhen: { key: 'mode', value: 'webhook' } },
+    { key: 'secret', labelKey: 'aiConfig.channel.signingSecret', sensitive: true, placeholderKey: 'aiConfig.channel.signingSecretPlaceholder', visibleWhen: { key: 'mode', value: 'webhook' } },
+    { key: 'client-id', labelKey: 'aiConfig.channel.clientId', sensitive: true, placeholderKey: 'aiConfig.channel.clientIdPlaceholder', visibleWhen: { key: 'mode', value: 'stream' } },
+    { key: 'client-secret', labelKey: 'aiConfig.channel.clientSecret', sensitive: true, placeholderKey: 'aiConfig.channel.clientSecretPlaceholder', visibleWhen: { key: 'mode', value: 'stream' } },
+    { key: 'push-targets', labelKey: 'aiConfig.channel.pushTargets', sensitive: false, placeholderKey: 'aiConfig.channel.pushTargetsPlaceholder', visibleWhen: { key: 'mode', value: 'stream' }, extraKey: 'aiConfig.channel.pushTargetsExtra' },
   ],
   feishu: [
-    { key: 'mode', label: '连接模式', sensitive: false, placeholder: '', type: 'select', options: [{ label: 'Webhook', value: 'webhook' }, { label: 'Stream (长连接/免公网IP)', value: 'stream' }] },
-    { key: 'webhook-url', label: 'Webhook 地址', sensitive: true, placeholder: '请输入飞书 Webhook URL', visibleWhen: { key: 'mode', value: 'webhook' } },
-    { key: 'secret', label: '签名密钥', sensitive: true, placeholder: '请输入飞书签名 Secret', visibleWhen: { key: 'mode', value: 'webhook' } },
-    { key: 'app-id', label: 'App ID', sensitive: true, placeholder: '请输入飞书应用 App ID', visibleWhen: { key: 'mode', value: 'stream' } },
-    { key: 'app-secret', label: 'App Secret', sensitive: true, placeholder: '请输入飞书应用 App Secret', visibleWhen: { key: 'mode', value: 'stream' } },
+    { key: 'mode', labelKey: 'aiConfig.channel.mode', sensitive: false, placeholderKey: '', type: 'select', optionKeys: [{ labelKey: 'aiConfig.channel.modeWebhook', value: 'webhook' }, { labelKey: 'aiConfig.channel.modeStreamFeishu', value: 'stream' }] },
+    { key: 'webhook-url', labelKey: 'aiConfig.channel.webhookUrl', sensitive: true, placeholderKey: 'aiConfig.channel.webhookUrlPlaceholder', visibleWhen: { key: 'mode', value: 'webhook' } },
+    { key: 'secret', labelKey: 'aiConfig.channel.signingSecret', sensitive: true, placeholderKey: 'aiConfig.channel.signingSecretPlaceholder', visibleWhen: { key: 'mode', value: 'webhook' } },
+    { key: 'app-id', labelKey: 'aiConfig.channel.appId', sensitive: true, placeholderKey: 'aiConfig.channel.appIdPlaceholder', visibleWhen: { key: 'mode', value: 'stream' } },
+    { key: 'app-secret', labelKey: 'aiConfig.channel.appSecret', sensitive: true, placeholderKey: 'aiConfig.channel.appSecretPlaceholder', visibleWhen: { key: 'mode', value: 'stream' } },
+    { key: 'push-targets', labelKey: 'aiConfig.channel.pushTargets', sensitive: false, placeholderKey: 'aiConfig.channel.pushTargetsPlaceholderFeishu', visibleWhen: { key: 'mode', value: 'stream' }, extraKey: 'aiConfig.channel.pushTargetsExtraFeishu' },
   ],
   slack: [
-    { key: 'webhook-url', label: 'Webhook 地址', sensitive: true, placeholder: '请输入 Slack Webhook URL' },
-    { key: 'bot-token', label: 'Bot Token', sensitive: true, placeholder: '请输入 Slack Bot Token' },
+    { key: 'webhook-url', labelKey: 'aiConfig.channel.webhookUrl', sensitive: true, placeholderKey: 'aiConfig.channel.webhookUrlPlaceholder' },
+    { key: 'bot-token', labelKey: 'aiConfig.channel.botToken', sensitive: true, placeholderKey: 'aiConfig.channel.botTokenPlaceholder' },
   ],
   'wechat-work': [
-    { key: 'webhook-url', label: 'Webhook 地址', sensitive: true, placeholder: '请输入企业微信 Webhook URL' },
+    { key: 'webhook-url', labelKey: 'aiConfig.channel.webhookUrl', sensitive: true, placeholderKey: 'aiConfig.channel.webhookUrlPlaceholder' },
   ],
 };
 
@@ -204,12 +218,58 @@ const BotConfig: React.FC = () => {
     }));
   };
 
+  const renderStreamConfigTips = (channel: string, mode: string) => {
+    if (mode !== 'stream') return null;
+
+    if (channel === 'dingtalk') {
+      return (
+        <Alert
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+          message={t('aiConfig.channel.dingtalkStreamTips')}
+          description={
+            <ul style={{ margin: '8px 0 0 0', paddingLeft: 20 }}>
+              <li>{t('aiConfig.channel.dingtalkStreamTip1')}</li>
+              <li>{t('aiConfig.channel.dingtalkStreamTip2')}</li>
+              <li>{t('aiConfig.channel.dingtalkStreamTip3')}</li>
+              <li>{t('aiConfig.channel.dingtalkStreamTip4')}</li>
+            </ul>
+          }
+        />
+      );
+    }
+
+    if (channel === 'feishu') {
+      return (
+        <Alert
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+          message={t('aiConfig.channel.feishuStreamTips')}
+          description={
+            <ul style={{ margin: '8px 0 0 0', paddingLeft: 20 }}>
+              <li>{t('aiConfig.channel.feishuStreamTip1')}</li>
+              <li>{t('aiConfig.channel.feishuStreamTip2')}</li>
+              <li>{t('aiConfig.channel.feishuStreamTip3')}</li>
+              <li>{t('aiConfig.channel.feishuStreamTip4')}</li>
+            </ul>
+          }
+        />
+      );
+    }
+
+    return null;
+  };
+
   const renderChannelTab = (channel: string) => {
     const form = channelForms[channel] || { enabled: false, settings: {} };
     const meta = CHANNEL_SETTINGS_META[channel] || [];
+    const currentMode = form.settings?.['mode'] || '';
 
     return (
       <div>
+        {renderStreamConfigTips(channel, currentMode)}
         <Form layout="vertical" style={{ maxWidth: 600 }}>
           <Form.Item label={t('aiConfig.channel.enabled')}>
             <Switch checked={form.enabled} onChange={(v) => updateChannelEnabled(channel, v)} />
@@ -221,24 +281,24 @@ const BotConfig: React.FC = () => {
               if (depValue !== field.visibleWhen.value) return null;
             }
             return (
-              <Form.Item key={field.key} label={field.label}>
-                {field.type === 'select' && field.options ? (
+              <Form.Item key={field.key} label={t(field.labelKey)} extra={field.extraKey ? t(field.extraKey) : undefined}>
+                {field.type === 'select' && field.optionKeys ? (
                   <Select
-                    value={form.settings?.[field.key] || (field.options[0]?.value ?? '')}
+                    value={form.settings?.[field.key] || (field.optionKeys[0]?.value ?? '')}
                     onChange={(v) => updateChannelSetting(channel, field.key, v)}
-                    options={field.options}
+                    options={field.optionKeys.map((o) => ({ label: t(o.labelKey), value: o.value }))}
                   />
                 ) : field.sensitive ? (
                   <Input.Password
                     value={form.settings?.[field.key] || ''}
                     onChange={(e) => updateChannelSetting(channel, field.key, e.target.value)}
-                    placeholder={field.placeholder}
+                    placeholder={field.placeholderKey ? t(field.placeholderKey) : ''}
                   />
                 ) : (
                   <Input
                     value={form.settings?.[field.key] || ''}
                     onChange={(e) => updateChannelSetting(channel, field.key, e.target.value)}
-                    placeholder={field.placeholder}
+                    placeholder={field.placeholderKey ? t(field.placeholderKey) : ''}
                   />
                 )}
               </Form.Item>

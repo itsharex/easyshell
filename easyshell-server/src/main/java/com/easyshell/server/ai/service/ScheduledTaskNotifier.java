@@ -83,33 +83,33 @@ public class ScheduledTaskNotifier {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(emoji).append(" 定时任务通知\n");
+        sb.append(emoji).append(" Scheduled Task / 定时任务通知\n");
         sb.append("━━━━━━━━━━━━━━━━━━\n");
-        sb.append("📋 任务: ").append(task.getName()).append("\n");
-        sb.append("🕐 时间: ").append(LocalDateTime.now().format(DT_FMT)).append("\n");
-        sb.append("📊 状态: ").append(translateStatus(status));
+        sb.append("📋 Task / 任务: ").append(task.getName()).append("\n");
+        sb.append("🕐 Time / 时间: ").append(LocalDateTime.now().format(DT_FMT)).append("\n");
+        sb.append("📊 Status / 状态: ").append(translateStatus(status));
         if (hasAlert) {
-            sb.append(" (发现告警)");
+            sb.append(" (Alert Detected / 发现告警)");
         }
         sb.append("\n");
 
         if (report.getAiAnalysis() != null && !report.getAiAnalysis().isBlank()) {
-            sb.append("\n📝 AI 分析摘要:\n");
+            sb.append("\n📝 AI Analysis / AI 分析摘要:\n");
             String analysis = report.getAiAnalysis();
             if (analysis.length() > MAX_ANALYSIS_LENGTH) {
-                analysis = analysis.substring(0, MAX_ANALYSIS_LENGTH) + "\n...(已截断，请在管理面板查看完整报告)";
+                analysis = analysis.substring(0, MAX_ANALYSIS_LENGTH) + "\n...(Truncated / 已截断)";
             }
             sb.append(analysis);
         } else if (report.getScriptOutput() != null && !report.getScriptOutput().isBlank()) {
-            sb.append("\n📄 执行输出摘要:\n");
+            sb.append("\n📄 Output / 执行输出摘要:\n");
             String output = report.getScriptOutput();
             if (output.length() > MAX_ANALYSIS_LENGTH) {
-                output = output.substring(0, MAX_ANALYSIS_LENGTH) + "\n...(已截断)";
+                output = output.substring(0, MAX_ANALYSIS_LENGTH) + "\n...(Truncated / 已截断)";
             }
             sb.append(output);
         }
 
-        sb.append("\n\n💬 回复此消息可继续向 AI 询问本次报告详情");
+        sb.append("\n\n💬 Reply to inquire AI about this report / 回复此消息可继续向 AI 询问本次报告详情");
         return sb.toString();
     }
 
@@ -158,9 +158,9 @@ public class ScheduledTaskNotifier {
 
     private String translateStatus(String status) {
         return switch (status) {
-            case "success" -> "成功";
-            case "failed" -> "失败";
-            case "running" -> "执行中";
+            case "success" -> "Success / 成功";
+            case "failed" -> "Failed / 失败";
+            case "running" -> "Running / 执行中";
             default -> status;
         };
     }
@@ -168,6 +168,11 @@ public class ScheduledTaskNotifier {
     private static final Set<String> ALERT_KEYWORDS = Set.of(
             "严重", "危险", "紧急", "critical",
             "异常", "告警", "磁盘空间不足", "内存不足",
-            "cpu 使用率过高", "安全风险"
+            "cpu 使用率过高", "安全风险",
+            "error", "warning", "alert", "fatal",
+            "failure", "failed", "timeout", "unreachable",
+            "out of memory", "oom", "disk full", "no space left",
+            "high risk", "vulnerability", "unauthorized",
+            "connection refused", "service down", "not responding"
     );
 }

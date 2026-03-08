@@ -84,8 +84,8 @@ public class AiConfigController {
     private static final Map<String, List<String>> CHANNEL_SETTINGS_KEYS = Map.of(
             "telegram", List.of("bot-token", "allowed-chat-ids"),
             "discord", List.of("bot-token", "guild-id", "allowed-channel-ids"),
-            "dingtalk", List.of("mode", "webhook-url", "secret", "client-id", "client-secret"),
-            "feishu", List.of("mode", "webhook-url", "secret", "app-id", "app-secret"),
+            "dingtalk", List.of("mode", "webhook-url", "secret", "client-id", "client-secret", "push-targets"),
+            "feishu", List.of("mode", "webhook-url", "secret", "app-id", "app-secret", "push-targets"),
             "slack", List.of("webhook-url", "bot-token"),
             "wechat-work", List.of("webhook-url")
     );
