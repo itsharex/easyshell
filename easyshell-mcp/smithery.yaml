@@ -26,11 +26,44 @@ startCommand:
         format: password
     required: [easyshellUrl, easyshellUser, easyshellPass]
   commandFunction:
-    # Smithery 会调用此函数生成启动命令
     |-
     (config) => ({
       command: "npx",
       args: ["-y", "@easyshell/mcp-server"],
+      env: {
+        EASYSHELL_URL: config.easyshellUrl,
+        EASYSHELL_USER: config.easyshellUser,
+        EASYSHELL_PASS: config.easyshellPass
+      }
+    })
+httpStartCommand:
+  type: http
+  configSchema:
+    type: object
+    properties:
+      easyshellUrl:
+        type: string
+        title: EasyShell Server URL
+        description: "The URL of your EasyShell server (e.g. http://localhost:18080)"
+        default: "http://localhost:18080"
+      easyshellUser:
+        type: string
+        title: Username
+        default: "easyshell"
+      easyshellPass:
+        type: string
+        title: Password
+        format: password
+      port:
+        type: number
+        title: HTTP Port
+        default: 3000
+    required: [easyshellUrl, easyshellUser, easyshellPass]
+  commandFunction:
+    |-
+    (config) => ({
+      command: "npx",
+      args: ["-y", "@easyshell/mcp-server", "--port", String(config.port || 3000), "--host", "0.0.0.0"],
       env: {
         EASYSHELL_URL: config.easyshellUrl,
         EASYSHELL_USER: config.easyshellUser,

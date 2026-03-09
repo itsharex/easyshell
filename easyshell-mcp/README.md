@@ -52,6 +52,39 @@ Use the same MCP server block in your OpenCode MCP configuration.
 | `EASYSHELL_USER` | Yes | EasyShell username. |
 | `EASYSHELL_PASS` | Yes | EasyShell password. |
 
+## Transport Modes
+
+### stdio (default)
+
+Used by Claude Desktop, Cursor, OpenCode, and other local AI clients:
+
+```bash
+npx -y @easyshell/mcp-server
+```
+
+### HTTP (SSE + Streamable HTTP)
+
+For remote deployments, Smithery.ai, or browser-based clients:
+
+```bash
+npx -y @easyshell/mcp-server --port 3000
+```
+
+Bind to all interfaces for remote access:
+
+```bash
+npx -y @easyshell/mcp-server --port 3000 --host 0.0.0.0
+```
+
+Endpoints:
+
+| Endpoint | Method | Protocol |
+|---|---|---|
+| `/mcp` | POST / GET / DELETE | Streamable HTTP (2025-03-26) |
+| `/sse` | GET | Legacy SSE (2024-11-05) |
+| `/messages?sessionId=<id>` | POST | Legacy SSE message handler |
+| `/health` | GET | Health check |
+
 ## Full Tool Reference
 
 | Tier | Tool | Purpose |
