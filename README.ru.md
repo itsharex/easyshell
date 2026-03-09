@@ -10,7 +10,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Docs](https://img.shields.io/badge/Docs-docs.easyshell.ai-green.svg)](https://docs.easyshell.ai)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/WqFD9VQe)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/akQqRgNB6t)
 
 **Язык**: [English](./README.md) | [简体中文](./README.zh-CN.md) | [繁體中文](./README.zh-TW.md) | [한국어](./README.ko.md) | Русский | [日本語](./README.ja.md)
 
@@ -221,10 +221,10 @@ easyshell/
 
 ## Сообщество
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/WqFD9VQe)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/akQqRgNB6t)
 
 Присоединяйтесь к нашему сообществу в Discord для поддержки, обсуждений и обновлений:
-**[https://discord.gg/WqFD9VQe](https://discord.gg/WqFD9VQe)**
+**[https://discord.gg/akQqRgNB6t](https://discord.gg/akQqRgNB6t)**
 
 ## Лицензия
 

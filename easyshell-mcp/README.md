@@ -127,5 +127,5 @@ npm run inspector
 ## Links
 
 - Documentation: https://docs.easyshell.ai
-- Discord: https://discord.gg/WqFD9VQe
+- Discord: https://discord.gg/akQqRgNB6t
 - GitHub: https://github.com/easyshell-ai/easyshell

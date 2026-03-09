@@ -10,7 +10,7 @@ Let AI write your scripts, orchestrate multi-host tasks, and analyze your infras
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Docs](https://img.shields.io/badge/Docs-docs.easyshell.ai-green.svg)](https://docs.easyshell.ai)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/WqFD9VQe)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/akQqRgNB6t)
 
 **Language**: English | [简体中文](./README.zh-CN.md) | [繁體中文](./README.zh-TW.md) | [한국어](./README.ko.md) | [Русский](./README.ru.md) | [日本語](./README.ja.md)
 
@@ -221,10 +221,10 @@ Visit **[docs.easyshell.ai](https://docs.easyshell.ai)** for:
 
 ## Community
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/WqFD9VQe)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/akQqRgNB6t)
 
 Join our Discord community for support, discussions, and updates:
-**[https://discord.gg/WqFD9VQe](https://discord.gg/WqFD9VQe)**
+**[https://discord.gg/akQqRgNB6t](https://discord.gg/akQqRgNB6t)**
 
 ## License
 

@@ -10,7 +10,7 @@ AI가 스크립트를 작성하고, 여러 호스트의 작업을 조율하며, 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Docs](https://img.shields.io/badge/Docs-docs.easyshell.ai-green.svg)](https://docs.easyshell.ai)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/WqFD9VQe)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/akQqRgNB6t)
 
 **언어**: [English](./README.md) | [简体中文](./README.zh-CN.md) | [繁體中文](./README.zh-TW.md) | 한국어 | [Русский](./README.ru.md) | [日本語](./README.ja.md)
 
@@ -221,10 +221,10 @@ easyshell/
 
 ## 커뮤니티
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/WqFD9VQe)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289da?logo=discord&logoColor=white)](https://discord.gg/akQqRgNB6t)
 
 지식 공유, 토론 및 업데이트를 위해 Discord 커뮤니티에 참여하세요:
-**[https://discord.gg/WqFD9VQe](https://discord.gg/WqFD9VQe)**
+**[https://discord.gg/akQqRgNB6t](https://discord.gg/akQqRgNB6t)**
 
 ## 라이선스
 
