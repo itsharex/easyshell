@@ -22,6 +22,7 @@ Traditional server management tools expect you to write every script, SSH into e
 
 - **Describe what you need in plain language** → AI writes production-ready shell scripts with diff review
 - **Set a goal across multiple hosts** → AI plans the execution steps, runs them, and synthesizes the results
+- **Schedule automated inspections** → AI analyzes output and decides whether to alert your team via bot channels
 - **Connect via Web SSH** → Full terminal with file manager, multi-tab, search — no local client needed
 
 ---
@@ -38,6 +39,12 @@ The AI Script Workbench is a split-panel editor where you describe requirements 
   <img src="docs/images/AI%20Script%20helper.png" alt="AI Script Assistant — live code generation with diff review" width="90%" />
 </p>
 
+**How it works:**
+1. **Describe** — write your requirements in natural language, choose the target OS
+2. **Generate** — AI streams a production-ready script in real time
+3. **Review** — built-in diff view highlights every change; summary tab explains modifications
+4. **Apply** — one click to save the script to your library or dispatch it immediately
+
 ### 2. AI Task Orchestration
 
 > "Check disk and memory on all hosts, flag anything over 80%, and suggest fixes." — Done.
@@ -48,58 +55,29 @@ The AI Chat interface lets you issue high-level operational goals. AI decomposes
   <img src="docs/images/AI%20task%20orchestration.png" alt="AI Task Orchestration — multi-step execution plan with analysis" width="90%" />
 </p>
 
-### 3. Fully Functional Web SSH
+**How it works:**
+1. **Instruct** — describe a high-level goal in the AI Chat (e.g. "check disk on all hosts")
+2. **Plan** — AI decomposes the goal into a multi-step execution plan (explore → analyze → report)
+3. **Execute** — scripts are dispatched to target hosts in parallel; results collected automatically
+4. **Report** — AI delivers a structured analysis with risk assessment and actionable recommendations
 
-> Real terminal. Real file manager. No SSH client required.
+### 3. AI Scheduled Inspections
 
-A production-grade web terminal with multi-tab sessions, integrated file manager (upload, download, create, delete, navigate), full-text search within terminal buffer, and persistent connections via WebSocket. Manage files and run commands side by side.
+> **Cron → Script → AI Analysis → Intelligent Alert** — AI analyzes output and decides whether to alert your team.
 
-<p align="center">
-  <img src="docs/images/Fully%20functional%20web%20SSH.png" alt="Web SSH — terminal with file manager and multi-tab" width="90%" />
-</p>
-
-### 4. Host Management & Monitoring
-
-> Unified view of all servers with real-time status, batch operations, and agent lifecycle management.
-
-Manage hosts individually or in bulk — add via form or CSV import, organize into clusters, monitor connection status, and deploy/upgrade agents with one click. The unified dashboard shows health metrics at a glance.
+Schedule inspection tasks with cron expressions and select scripts from the built-in script library. EasyShell dispatches them to agents on schedule, collects output (disk, memory, services, logs), sends it to your AI model for intelligent analysis, and **lets AI decide whether the results warrant an alert** — pushing notifications only when they matter.
 
 <p align="center">
-  <img src="docs/images/host-management.png" alt="Host Management — unified server dashboard with batch operations" width="90%" />
+  <img src="docs/images/schedule_task.png" alt="AI Scheduled Inspections — cron-based tasks with AI-powered output analysis and intelligent alerting" width="90%" />
 </p>
-
-### 5. Real-Time Streaming Logs
-
-> Watch script execution unfold live across all target hosts.
-
-When you dispatch a script, EasyShell streams output from every agent in real time. Color-coded logs, timestamps, and per-host filtering help you spot issues instantly — no more waiting for batch jobs to complete.
-
-<p align="center">
-  <img src="docs/images/realtime-logs.png" alt="Real-Time Logs — live streaming output from multiple hosts" width="90%" />
-</p>
-
-### 6. Security & Risk Controls
-
-> Built-in safeguards: approval workflows, audit trails, and operation restrictions.
-
-Configure which operations require approval before execution. All actions are logged for compliance. Role-based access control limits who can do what, and sensitive commands can be flagged or blocked entirely.
-
-<p align="center">
-  <img src="docs/images/security-controls.png" alt="Security Controls — approval workflows and audit logging" width="90%" />
-</p>
----
-
-## AI-Powered Automated Inspections
-
-> **Cron → Script → AI Analysis → Bot Notification** — fully automated, zero human intervention.
-
-Schedule inspection tasks with cron expressions. EasyShell dispatches scripts to agents, collects output (disk, memory, services, logs), sends it to your AI model for intelligent analysis, and pushes the report to your team via bot channels.
 
 **How it works:**
-1. **Configure** — cron expression + shell script + AI analysis prompt
+1. **Configure** — cron expression + script (from library or custom) + AI analysis prompt + notification rules
 2. **Execute** — EasyShell dispatches to target agents on schedule
-3. **Analyze** — Output sent to AI model (OpenAI / Gemini / GitHub Copilot / Custom)
-4. **Notify** — Report pushed to bot channel (Telegram, Discord, Slack, DingTalk, Feishu, WeCom)
+3. **Analyze** — Output sent to AI model (OpenAI / Gemini / GitHub Copilot / Custom) for intelligent analysis
+4. **Notify** — AI determines severity and pushes alerts via bot channels when action is needed
+
+**Notification modes:** Always push, push on failure, push on warning, or **AI decides** — the AI model evaluates the output and autonomously determines if an alert is necessary.
 
 **Supported Bot Channels** ([Configuration Guide](https://docs.easyshell.ai/configuration/bot-channels/)):
 
@@ -111,6 +89,46 @@ Schedule inspection tasks with cron expressions. EasyShell dispatches scripts to
 | [DingTalk (钉钉)](https://docs.easyshell.ai/configuration/bot-channels/) | ✅ Supported |
 | [Feishu (飞书)](https://docs.easyshell.ai/configuration/bot-channels/) | ✅ Supported |
 | [WeCom (企业微信)](https://docs.easyshell.ai/configuration/bot-channels/) | ✅ Supported |
+
+### 4. Fully Functional Web SSH
+
+> Real terminal. Real file manager. No SSH client required.
+
+A production-grade web terminal with multi-tab sessions, integrated file manager (upload, download, create, delete, navigate), full-text search within terminal buffer, and persistent connections via WebSocket. Manage files and run commands side by side.
+
+<p align="center">
+  <img src="docs/images/Fully%20functional%20web%20SSH.png" alt="Web SSH — terminal with file manager and multi-tab" width="90%" />
+</p>
+
+### 5. Host Management & Monitoring
+
+> Unified view of all servers with real-time status, batch operations, and agent lifecycle management.
+
+Manage hosts individually or in bulk — add via form or CSV import, organize into clusters, monitor connection status, and deploy/upgrade agents with one click. The unified dashboard shows health metrics at a glance.
+
+<p align="center">
+  <img src="docs/images/host-management.png" alt="Host Management — unified server dashboard with batch operations" width="90%" />
+</p>
+
+### 6. Real-Time Streaming Logs
+
+> Watch script execution unfold live across all target hosts.
+
+When you dispatch a script, EasyShell streams output from every agent in real time. Color-coded logs, timestamps, and per-host filtering help you spot issues instantly — no more waiting for batch jobs to complete.
+
+<p align="center">
+  <img src="docs/images/realtime-logs.png" alt="Real-Time Logs — live streaming output from multiple hosts" width="90%" />
+</p>
+
+### 7. Security & Risk Controls
+
+> Built-in safeguards: approval workflows, audit trails, and operation restrictions.
+
+Configure which operations require approval before execution. All actions are logged for compliance. Role-based access control limits who can do what, and sensitive commands can be flagged or blocked entirely.
+
+<p align="center">
+  <img src="docs/images/security-controls.png" alt="Security Controls — approval workflows and audit logging" width="90%" />
+</p>
 
 ---
 
@@ -144,7 +162,7 @@ Open `http://localhost:18880` → login with `easyshell` / `easyshell@changeme`.
 
 | Category | Features |
 |----------|----------|
-| **AI Intelligence** | AI Script Assistant (generate / modify / diff / summary), AI Task Orchestration (multi-step plans, parallel execution, analysis), AI Chat, Scheduled Inspections with AI Analysis & Bot Push, Inspection Reports, Operation Approvals |
+| **AI Intelligence** | AI Script Assistant (generate / modify / diff / summary), AI Task Orchestration (multi-step plans, parallel execution, analysis), AI Scheduled Inspections (cron-based, AI output analysis, intelligent alert decisions, multi-channel bot push), AI Chat, Inspection Reports, Operation Approvals |
 | **Operations** | Script library, batch execution, real-time streaming logs, Web SSH terminal with file manager |
 | **Infrastructure** | Host management, real-time monitoring, cluster grouping, agent auto-deployment |
 | **Administration** | User management, system config, AI model settings (OpenAI / Gemini / Copilot / Custom), risk control |
