@@ -51,9 +51,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
     <div 
       className="ai-chat-input-wrapper"
       style={{
-        padding: isMobile ? '8px 12px 12px' : '12px 24px 16px',
+        padding: isMobile ? '8px 12px 12px' : '16px 24px 24px',
         background: token.colorBgContainer,
-        borderTop: `1px solid ${token.colorBorderSecondary}`,
+        position: 'relative',
+        boxShadow: '0 -4px 12px rgba(0,0,0,0.02)',
       }}
     >
       {isMobile ? (
@@ -73,7 +74,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
               onKeyDown={onKeyDown}
               placeholder={t('chat.inputPlaceholder')}
               autoSize={{ minRows: 1, maxRows: 4 }}
-              style={{ flex: 1, resize: 'none' }}
+              style={{ 
+                flex: 1, 
+                resize: 'none',
+                borderRadius: 16,
+                padding: '8px 16px',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.02)',
+              }}
               disabled={loading}
             />
             {isStreaming ? (
@@ -82,6 +89,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 icon={<StopOutlined />}
                 onClick={onStop}
                 size="middle"
+                style={{ borderRadius: 16, transition: 'all 0.2s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               />
             ) : (
               <Button
@@ -90,6 +100,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 onClick={onSend}
                 disabled={!inputValue.trim() || loading}
                 size="middle"
+                style={{ borderRadius: 16, transition: 'all 0.2s ease' }}
+                onMouseEnter={(e) => { if (!(!inputValue.trim() || loading)) e.currentTarget.style.transform = 'scale(1.05)' }}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               />
             )}
           </div>
@@ -194,7 +207,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               </Tooltip>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', marginTop: 12 }}>
             <TextArea
               ref={inputRef}
               value={inputValue}
@@ -202,7 +215,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
               onKeyDown={onKeyDown}
               placeholder={t('chat.inputPlaceholder')}
               autoSize={{ minRows: 1, maxRows: 6 }}
-              style={{ flex: 1, resize: 'none' }}
+              style={{ 
+                flex: 1, 
+                resize: 'none',
+                borderRadius: 16,
+                padding: '10px 16px',
+                fontSize: 15,
+                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
+              }}
               disabled={loading}
             />
             {isStreaming ? (
@@ -210,7 +230,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 danger
                 icon={<StopOutlined />}
                 onClick={onStop}
-                style={{ height: 40 }}
+                style={{ height: 42, borderRadius: 21, padding: '0 20px', transition: 'all 0.2s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
                 {t('ai.chat.stop')}
               </Button>
@@ -220,7 +242,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 icon={<SendOutlined />}
                 onClick={onSend}
                 disabled={!inputValue.trim() || loading}
-                style={{ height: 40 }}
+                style={{ height: 42, width: 42, borderRadius: 21, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' }}
+                onMouseEnter={(e) => { if (!(!inputValue.trim() || loading)) e.currentTarget.style.transform = 'scale(1.05)' }}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               />
             )}
           </div>

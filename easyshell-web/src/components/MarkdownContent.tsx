@@ -1,101 +1,87 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
+import './MarkdownContent.css';
 
 interface MarkdownContentProps {
   content: string;
 }
 
-/**
- * Shared Markdown renderer using ReactMarkdown + remark-gfm.
- * Replaces all dangerouslySetInnerHTML + formatMarkdown() patterns.
- */
+const CodeBlock = ({ children, className, ...props }: any) => {
+  const [copied, setCopied] = useState(false);
+  const codeRef = useRef<HTMLElement>(null);
+  
+  const match = /language-(\w+)/.exec(className || '');
+  const language = match ? match[1] : '';
+
+  const handleCopy = () => {
+    if (codeRef.current) {
+      const text = codeRef.current.textContent || '';
+      navigator.clipboard.writeText(text).catch(() => {});
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="code-block-wrapper">
+      <div className="code-block-header">
+        <span className="code-block-lang">{language}</span>
+        <button className="code-block-copy" onClick={handleCopy} title="Copy code">
+          {copied ? <CheckOutlined /> : <CopyOutlined />}
+        </button>
+      </div>
+      <pre className="code-block-pre">
+        <code ref={codeRef} className={className} {...props}>
+          {children}
+        </code>
+      </pre>
+    </div>
+  );
+};
+
 const MarkdownContent: React.FC<MarkdownContentProps> = React.memo(({ content }) => (
-  <div style={{ userSelect: 'text', cursor: 'text' }}>
-  <ReactMarkdown
-    remarkPlugins={[remarkGfm]}
-    components={{
-      code: ({ children, className, ...props }) => {
-        const isBlock = className?.startsWith('language-');
-        if (isBlock) {
+  <div className="markdown-container" style={{ userSelect: 'text', cursor: 'text' }}>
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeHighlight]}
+      components={{
+        pre: ({ children }) => <>{children}</>,
+        code: ({ children, className, node, ...props }: any) => {
+          const isBlock = /language-(\w+)/.exec(className || '') || className?.includes('hljs');
+          if (isBlock) {
+            return (
+              <CodeBlock className={className} {...props}>
+                {children}
+              </CodeBlock>
+            );
+          }
           return (
-            <code
-              className={className}
-              style={{
-                display: 'block',
-                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
-                fontSize: 13,
-                lineHeight: 1.5,
-              }}
-              {...props}
-            >
+            <code className="inline-code" {...props}>
               {children}
             </code>
           );
-        }
-        return (
-          <code
-            style={{
-              background: 'rgba(0,0,0,0.06)',
-              padding: '2px 6px',
-              borderRadius: 3,
-              fontSize: 13,
-              fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
-            }}
-            {...props}
-          >
-            {children}
-          </code>
-        );
-      },
-      pre: ({ children }) => (
-        <pre
-          style={{
-            background: '#1e1e1e',
-            color: '#d4d4d4',
-            padding: 12,
-            borderRadius: 6,
-            overflowX: 'auto',
-            fontSize: 13,
-            margin: '8px 0',
-            lineHeight: 1.5,
-          }}
-        >
-          {children}
-        </pre>
-      ),
-      table: ({ children }) => (
-        <div style={{ overflowX: 'auto', margin: '8px 0' }}>
-          <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
-            {children}
-          </table>
-        </div>
-      ),
-      th: ({ children }) => (
-        <th
-          style={{
-            border: '1px solid #d9d9d9',
-            padding: '8px 12px',
-            background: '#fafafa',
-            textAlign: 'left',
-            fontWeight: 600,
-          }}
-        >
-          {children}
-        </th>
-      ),
-      td: ({ children }) => (
-        <td style={{ border: '1px solid #d9d9d9', padding: '8px 12px' }}>{children}</td>
-      ),
-      h1: ({ children }) => <h2 style={{ margin: '12px 0 4px' }}>{children}</h2>,
-      h2: ({ children }) => <h3 style={{ margin: '12px 0 4px' }}>{children}</h3>,
-      h3: ({ children }) => <h4 style={{ margin: '12px 0 4px' }}>{children}</h4>,
-      li: ({ children }) => <li style={{ marginLeft: 16 }}>{children}</li>,
-      p: ({ children }) => <p style={{ margin: '4px 0' }}>{children}</p>,
-    }}
-  >
-    {content}
-  </ReactMarkdown>
+        },
+        table: ({ children }) => (
+          <div className="markdown-table-wrapper">
+            <table className="markdown-table">
+              {children}
+            </table>
+          </div>
+        ),
+        th: ({ children }) => <th>{children}</th>,
+        td: ({ children }) => <td>{children}</td>,
+        h1: ({ children }) => <h2 style={{ margin: '12px 0 4px' }}>{children}</h2>,
+        h2: ({ children }) => <h3 style={{ margin: '12px 0 4px' }}>{children}</h3>,
+        h3: ({ children }) => <h4 style={{ margin: '12px 0 4px' }}>{children}</h4>,
+        li: ({ children }) => <li style={{ marginLeft: 16 }}>{children}</li>,
+        p: ({ children }) => <p style={{ margin: '4px 0' }}>{children}</p>,
+      }}
+    >
+      {content}
+    </ReactMarkdown>
   </div>
 ));
 

@@ -3,7 +3,6 @@ import { Button, Tooltip, theme } from 'antd';
 import {
   RobotOutlined,
   UserOutlined,
-  LoadingOutlined,
   CopyOutlined,
   CheckOutlined,
   ReloadOutlined,
@@ -85,7 +84,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 0 }}>
       <div className="ai-chat-messages" onScroll={onMessagesScroll}>
       {messages.length === 0 && !loading ? (
-        <div style={{
+        <div className="ai-chat-empty-state" style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -93,45 +92,59 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
           height: '100%',
           color: token.colorTextSecondary,
         }}>
-          <RobotOutlined style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }} />
-          <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8, color: token.colorText }}>{t('chat.aiAssistant')}</div>
-          <div style={{ fontSize: 14, marginBottom: 24 }}>{t('chat.aiDescription')}</div>
+          <RobotOutlined className="ai-chat-empty-icon" style={{ fontSize: 64, marginBottom: 24 }} />
+          <div style={{ 
+            fontSize: 24, 
+            fontWeight: 700, 
+            marginBottom: 8, 
+            background: `linear-gradient(90deg, ${token.colorPrimary}, #8b5cf6)`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.5px'
+          }}>
+            {t('chat.aiAssistant')}
+          </div>
+          <div style={{ fontSize: 15, marginBottom: 32, opacity: 0.8 }}>{t('chat.aiDescription')}</div>
           <div style={{
             display: 'grid',
             gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-            gap: isMobile ? 8 : 12,
-            maxWidth: isMobile ? 320 : 480,
+            gap: isMobile ? 12 : 16,
+            maxWidth: isMobile ? 320 : 520,
             width: '100%',
             padding: isMobile ? '0 16px' : 0,
           }}>
             {SUGGESTED_PROMPTS.map((item, idx) => (
               <div
                 key={idx}
+                className="suggested-prompt-card"
                 onClick={() => onSuggestedPrompt(t(item.text))}
                 style={{
-                  padding: '14px 16px',
-                  borderRadius: 10,
+                  padding: '16px 20px',
+                  borderRadius: 12,
                   border: `1px solid ${token.colorBorderSecondary}`,
+                  borderLeft: `1px solid ${token.colorBorderSecondary}`,
                   background: token.colorBgContainer,
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
+                  gap: 12,
                   fontSize: 14,
                   color: token.colorText,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLDivElement).style.borderColor = token.colorPrimary;
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                  (e.currentTarget as HTMLDivElement).style.borderLeft = `4px solid ${token.colorPrimary}`;
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLDivElement).style.borderColor = token.colorBorderSecondary;
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+                  (e.currentTarget as HTMLDivElement).style.borderLeft = `1px solid ${token.colorBorderSecondary}`;
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)';
                 }}
               >
-                <span style={{ fontSize: 20 }}>{item.icon}</span>
-                <span>{t(item.text)}</span>
+                <span style={{ fontSize: 22 }}>{item.icon}</span>
+                <span style={{ fontWeight: 500 }}>{t(item.text)}</span>
               </div>
             ))}
           </div>
@@ -151,28 +164,30 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
             >
               {msg.role !== 'user' && (
                 <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  background: token.colorPrimary,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  background: `linear-gradient(135deg, ${token.colorPrimary}, #8b5cf6)`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginRight: 8,
+                  marginRight: 12,
                   flexShrink: 0,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                 }}>
-                  <RobotOutlined style={{ color: '#fff', fontSize: 16 }} />
+                  <RobotOutlined style={{ color: '#fff', fontSize: 18 }} />
                 </div>
               )}
               <div style={{ maxWidth: isMobile ? '85%' : '70%', position: 'relative', minWidth: 0 }}>
                 <div style={{
-                  padding: '10px 16px',
-                  borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                  background: msg.role === 'user' ? token.colorPrimary : token.colorBgContainer,
+                  padding: msg.role === 'user' ? '12px 18px' : '12px 18px',
+                  borderRadius: msg.role === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                  background: msg.role === 'user' ? `linear-gradient(135deg, ${token.colorPrimary}, #60a5fa)` : token.colorBgContainer,
                   color: msg.role === 'user' ? '#fff' : token.colorText,
-                  fontSize: 14,
+                  fontSize: 15,
                   lineHeight: 1.6,
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                  boxShadow: msg.role === 'user' ? '0 4px 12px rgba(37, 99, 235, 0.2)' : '0 2px 8px rgba(0,0,0,0.08)',
+                  borderLeft: msg.role === 'user' ? 'none' : `3px solid ${token.colorPrimary}40`,
                   wordBreak: 'break-word',
                 }}>
                   {msg.role === 'user' ? (
@@ -219,17 +234,19 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
               </div>
               {msg.role === 'user' && (
                 <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  background: token.colorPrimaryBg,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  background: token.colorBgContainer,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginLeft: 8,
+                  marginLeft: 12,
                   flexShrink: 0,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  border: `1px solid ${token.colorBorderSecondary}`,
                 }}>
-                  <UserOutlined style={{ color: token.colorPrimary, fontSize: 16 }} />
+                  <UserOutlined style={{ color: token.colorPrimary, fontSize: 18 }} />
                 </div>
               )}
             </div>
@@ -238,25 +255,27 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
           {loading && (
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
               <div style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                background: token.colorPrimary,
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                background: `linear-gradient(135deg, ${token.colorPrimary}, #8b5cf6)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: 8,
+                marginRight: 12,
                 flexShrink: 0,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
               }}>
-                <RobotOutlined style={{ color: '#fff', fontSize: 16 }} />
+                <RobotOutlined style={{ color: '#fff', fontSize: 18 }} />
               </div>
               <div style={{
-                padding: '10px 16px',
-                borderRadius: '16px 16px 16px 4px',
+                padding: '12px 18px',
+                borderRadius: '20px 20px 20px 4px',
                 background: token.colorBgContainer,
-                fontSize: 14,
+                fontSize: 15,
                 lineHeight: 1.6,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                borderLeft: `3px solid ${token.colorPrimary}40`,
                 maxWidth: isMobile ? '85%' : '70%',
                 minWidth: isMobile ? 160 : 200,
                 overflow: 'hidden',
@@ -304,9 +323,20 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                   <MarkdownContent content={streamingContent} />
                 ) : (
                   !streamingPlan && streamingThinkingLog.length === 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <LoadingOutlined spin />
-                      <span style={{ color: token.colorTextSecondary }}>{t('ai.chat.thinking')}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0' }}>
+                      <span style={{ 
+                        color: token.colorPrimary, 
+                        fontWeight: 500, 
+                        fontSize: 14,
+                        letterSpacing: '0.3px'
+                      }}>
+                        {t('ai.chat.thinking')}
+                      </span>
+                      <div className="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
                     </div>
                   )
                 )}
@@ -317,25 +347,27 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
           {!loading && pendingApprovals.length > 0 && (
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
               <div style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                background: token.colorPrimary,
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                background: `linear-gradient(135deg, ${token.colorPrimary}, #8b5cf6)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: 8,
+                marginRight: 12,
                 flexShrink: 0,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
               }}>
-                <RobotOutlined style={{ color: '#fff', fontSize: 16 }} />
+                <RobotOutlined style={{ color: '#fff', fontSize: 18 }} />
               </div>
               <div style={{
-                padding: '10px 16px',
-                borderRadius: '16px 16px 16px 4px',
+                padding: '12px 18px',
+                borderRadius: '20px 20px 20px 4px',
                 background: token.colorBgContainer,
-                fontSize: 14,
+                fontSize: 15,
                 lineHeight: 1.6,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                borderLeft: `3px solid ${token.colorPrimary}40`,
                 maxWidth: isMobile ? '85%' : '70%',
                 minWidth: isMobile ? 160 : 200,
               }}>
