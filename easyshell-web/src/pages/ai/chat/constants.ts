@@ -42,10 +42,12 @@ export const MODEL_OPTIONS: Record<string, { value: string; label: string }[]> =
     { value: '', label: 'chat.defaultModel' },
     { value: 'gpt-4o', label: 'GPT-4o' },
     { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+    { value: 'gpt-4.1', label: 'GPT-4.1' },
     { value: 'claude-sonnet-4-20250514', label: 'Claude Sonnet 4' },
     { value: 'claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
     { value: 'o1', label: 'o1' },
     { value: 'o3-mini', label: 'o3-mini' },
+    { value: 'o4-mini', label: 'o4-mini' },
   ],
 };
 

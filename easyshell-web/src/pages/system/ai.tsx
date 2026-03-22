@@ -411,7 +411,7 @@ const AiConfig: React.FC = () => {
         setCopilotDeviceInfo({ userCode, verificationUri, deviceCode });
         window.open(verificationUri, '_blank');
         setCopilotPolling(true);
-        let currentInterval = Math.max((interval || 5) * 1000, 5000);
+        let currentInterval = Math.max((interval || 8) * 1000, 8000);
         const poll = async () => {
           try {
             const pollRes = await copilotPollToken(deviceCode);
