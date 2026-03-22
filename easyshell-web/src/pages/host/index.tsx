@@ -29,11 +29,15 @@ import type { TagVO, HostCredentialVO } from '../../types';
 const { Text } = Typography;
 
 /* ── Agent version checking ── */
-const LATEST_AGENT_VERSION = '0.2.5';
+const LATEST_AGENT_VERSION = '1.0.9';
+
+function normalizeVersion(v: string): string {
+  return v.replace(/^v/i, '');
+}
 
 function compareVersions(v1: string, v2: string): number {
-  const parts1 = v1.split('.').map(Number);
-  const parts2 = v2.split('.').map(Number);
+  const parts1 = normalizeVersion(v1).split('.').map(Number);
+  const parts2 = normalizeVersion(v2).split('.').map(Number);
   for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
     const p1 = parts1[i] || 0;
     const p2 = parts2[i] || 0;
