@@ -57,3 +57,12 @@ export function saveSystemConfig(
 export function deleteSystemConfig(id: number): Promise<ApiResponse<null>> {
   return request.delete(`/v1/system/config/${id}`);
 }
+
+export interface VersionInfo {
+  version: string;
+  agentVersion: string;
+}
+
+export function getSystemVersion(): Promise<ApiResponse<VersionInfo>> {
+  return request.get('/v1/system/version');
+}

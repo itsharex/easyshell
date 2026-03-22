@@ -25,11 +25,11 @@ import {
 import { hostStatusMap, provisionStatusMap, getProvisionStep, provisionStepItems, getResourceColor, uninstallStepItems, getUninstallStep } from '../../utils/status';
 import { formatBytes } from '../../utils/format';
 import type { TagVO, HostCredentialVO } from '../../types';
+import { useVersion } from '../../hooks/useVersion';
 
 const { Text } = Typography;
 
 /* ── Agent version checking ── */
-const LATEST_AGENT_VERSION = '1.0.9';
 
 function normalizeVersion(v: string): string {
   return v.replace(/^v/i, '');
@@ -47,9 +47,9 @@ function compareVersions(v1: string, v2: string): number {
   return 0;
 }
 
-function isAgentOutdated(version: string | undefined): boolean {
-  if (!version) return false;
-  return compareVersions(version, LATEST_AGENT_VERSION) < 0;
+function isAgentOutdated(version: string | undefined, latestVersion: string | undefined): boolean {
+  if (!version || !latestVersion) return false;
+  return compareVersions(version, latestVersion) < 0;
 }
 
 /* ── CSV Export Utility ── */
@@ -92,6 +92,8 @@ const Host: React.FC = () => {
   const navigate = useNavigate();
   const { token } = theme.useToken();
   const actionRef = useRef<ActionType>(null);
+  const versionInfo = useVersion();
+  const latestAgentVersion = versionInfo?.agentVersion;
   const [agentTags, setAgentTags] = useState<Record<string, TagVO[]>>({});
   const [dataSource, setDataSource] = useState<HostCredentialVO[]>([]);
   const [serverUrlConfigured, setServerUrlConfigured] = useState(true);
@@ -610,10 +612,10 @@ const Host: React.FC = () => {
       width: 130,
       render: (_, record) => {
         if (!record.agentVersion) return '-';
-        const outdated = isAgentOutdated(record.agentVersion);
+        const outdated = isAgentOutdated(record.agentVersion, latestAgentVersion);
         if (outdated) {
           return (
-            <Tooltip title={t('host.agentOutdated', { current: record.agentVersion, latest: LATEST_AGENT_VERSION })}>
+            <Tooltip title={t('host.agentOutdated', { current: record.agentVersion, latest: latestAgentVersion })}>
               <Space size={4}>
                 <Text type="warning">{record.agentVersion}</Text>
                 <WarningOutlined style={{ color: '#faad14' }} />

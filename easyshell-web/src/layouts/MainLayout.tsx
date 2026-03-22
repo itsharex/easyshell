@@ -38,6 +38,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { getMe } from '../api/auth';
 import { useResponsive } from '../hooks/useResponsive';
+import { useVersion } from '../hooks/useVersion';
 
 const { Header, Sider, Content } = Layout;
 
@@ -70,6 +71,7 @@ const MainLayout: React.FC = () => {
   const { token } = theme.useToken();
   const { t, i18n } = useTranslation();
   const { isMobile } = useResponsive();
+  const versionInfo = useVersion();
 
   const routeLabelMap: Record<string, string> = useMemo(() => ({
     '/': t('nav.dashboard'),
@@ -314,7 +316,7 @@ const MainLayout: React.FC = () => {
             color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
             textAlign: 'center',
           }}>
-            EasyShell v1.0.9
+            EasyShell {versionInfo ? `v${versionInfo.agentVersion}` : ''}
           </div>
         </div>
       )}
